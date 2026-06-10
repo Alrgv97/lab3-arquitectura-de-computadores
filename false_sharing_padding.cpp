@@ -2,12 +2,11 @@
 #include <chrono>
 #include <omp.h>
 
-// Estructura corregida: se fuerza la alineacion de las variables
+// Estructura mejorada: Alineación a 128 bytes para evadir el Hardware Prefetcher
 struct AlignedCounters {
-    alignas(64) long long counter1; // se fuerza la alineacion a 64 bytes
-    char padding[64 - sizeof(long long)];
-    alignas(64) long long counter2;
-} aligned_counters; // global
+    alignas(128) long long counter1; 
+    alignas(128) long long counter2; 
+} aligned_counters; 
 
 void work_on_counter1(int iterations) {
     for (int i = 0; i < iterations; ++i) {
@@ -35,7 +34,7 @@ int main() {
 
     double end = omp_get_wtime();
     
-    std::cout << "Tiempo corregido (sin falso compartido): " << (end - start) << " s" << std::endl;
+    std::cout << "Tiempo corregido (padding 128b): " << (end - start) << " s" << std::endl;
     std::cout << "counter1 = " << aligned_counters.counter1 
               << ", counter2 = " << aligned_counters.counter2 << std::endl;
 
